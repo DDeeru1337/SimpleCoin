@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +41,8 @@ import androidx.core.graphics.drawable.toDrawable
 import com.example.simplecoin.ui.theme.MyGrayWhite
 import com.example.simplecoin.ui.theme.MyWhite
 import com.example.simplecoin.ui.theme.SimpleCoinTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +50,24 @@ class MainActivity : ComponentActivity() {
         setContent {
             SimpleCoinTheme {
 
+
+
                 val reshka = painterResource(id = R.drawable.reshka)
                 val orel = painterResource(id = R.drawable.orel)
                 val pravo = painterResource(id = R.drawable.pravo)
                 val levo = painterResource(id = R.drawable.levo)
-                val currentImageState = remember { mutableStateOf(0) }
-                val images = List<>(reshka, pravo, orel, levo)
+
+                @Composable
+                fun CoinFlipper() {
+                    val currentImageState = remember { mutableStateOf(0) }
+                    val images = listOf(reshka, pravo, orel, levo)
+                    LaunchedEffect(currentImageState.value) {
+                        while (true) {
+                            delay(250)
+                            currentImageState.value = (currentImageState.value + 1) % images.size
+                        }
+                    }
+                }
 
                 Column {
                     Box(
@@ -78,7 +93,7 @@ class MainActivity : ComponentActivity() {
                                     .height(160.dp),
                                 colors = ButtonDefaults.buttonColors(MyGrayWhite),
                                 onClick = {
-                                    coinFace = reshka
+                                    CoinFlipper().
                                 }
                             ) {
                                 Text(
